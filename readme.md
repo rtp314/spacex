@@ -17,3 +17,4 @@ Show details of specific launch
 Add hover effects on card
 Add About section
 Add footer
+Rotate photos when hovering over card

@@ -16,6 +16,9 @@ const Loader = styled.div`
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	img {
+		width: 10rem;
+	}
 `;
 
 export default function LaunchTable() {
