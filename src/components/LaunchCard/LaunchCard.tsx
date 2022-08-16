@@ -1,6 +1,10 @@
 import { Launch } from "../../hooks/useLaunches";
 import Card from "react-bootstrap/Card";
-import styles from "./LaunchCard.module.css";
+import styled from "styled-components";
+
+const MissionPatchImg = styled.img`
+	height: 1.5rem;
+`;
 
 export default function LaunchCard(props: Launch) {
 	return (
@@ -8,12 +12,7 @@ export default function LaunchCard(props: Launch) {
 			<Card.Body>
 				<Card.Title>
 					{props.links.mission_patch_small && (
-						<img
-							className='me-2'
-							style={{ height: "1.5rem" }}
-							src={props.links.mission_patch_small}
-							alt='mission patch'
-						/>
+						<MissionPatchImg className='me-2' src={props.links.mission_patch_small} alt='mission patch' />
 					)}
 					{props.mission_name}
 				</Card.Title>
