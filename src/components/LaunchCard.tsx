@@ -8,6 +8,17 @@ const MissionPatchImg = styled.img`
 
 const StyledCard = styled(Card)`
 	height: 20rem;
+	overflow: hidden;
+	img {
+		transform: scale(1);
+		transition: all 500ms ease;
+	}
+
+	&:hover {
+		img {
+			transform: scale(1.1);
+		}
+	}
 `;
 
 const StyledCardImg = styled(Card.Img)`
@@ -16,14 +27,15 @@ const StyledCardImg = styled(Card.Img)`
 `;
 
 const StyledOverlay = styled(Card.ImgOverlay)`
-	background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.1));
+	background: linear-gradient(rgba(0, 0, 0, 0.8) 10%, rgba(0, 0, 0, 0.1) 50%);
+	color: white;
 `;
 
 export default function LaunchCard(props: Launch) {
 	return (
 		<StyledCard className='shadow-sm'>
 			<StyledCardImg src={props.links.flickr_images[0] || props.links.mission_patch_small} />
-			<StyledOverlay className='text-white'>
+			<StyledOverlay>
 				<Card.Title>
 					{props.links.mission_patch_small && (
 						<MissionPatchImg className='me-2' src={props.links.mission_patch_small} alt='mission patch' />

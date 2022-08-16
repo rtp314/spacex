@@ -25,7 +25,7 @@ const PagesGrid = styled.div`
 	}
 `;
 
-const PagesWrapper = styled(Col)`
+const PageNumbersWrapper = styled(Col)`
 	grid-area: pages;
 	display: grid;
 	grid-template-columns: 1fr 2rem 1fr;
@@ -55,10 +55,12 @@ const PagesWrapper = styled(Col)`
 const PrevCol = styled(Col)`
 	grid-area: prev;
 	text-align: right;
+	cursor: pointer;
 `;
 
 const NextCol = styled(Col)`
 	grid-area: next;
+	cursor: pointer;
 `;
 
 export default function Pages({ numberOfPages, currentPage, goToPage, pagesToDisplay = 9 }: PagesProps) {
@@ -90,7 +92,7 @@ export default function Pages({ numberOfPages, currentPage, goToPage, pagesToDis
 	return (
 		<PagesGrid>
 			<PrevCol onClick={handlePrev}>Back</PrevCol>
-			<PagesWrapper>
+			<PageNumbersWrapper>
 				<div>
 					{left.map((pageNum) => (
 						<span onClick={() => goToPage(pageNum)} key={pageNum}>
@@ -106,7 +108,7 @@ export default function Pages({ numberOfPages, currentPage, goToPage, pagesToDis
 						</span>
 					))}
 				</div>
-			</PagesWrapper>
+			</PageNumbersWrapper>
 			<NextCol onClick={handleNext}>Next</NextCol>
 		</PagesGrid>
 	);

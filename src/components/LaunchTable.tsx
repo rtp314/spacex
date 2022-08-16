@@ -5,17 +5,8 @@ import Pages from "./Pages";
 import styled from "styled-components";
 import { Col, Row } from "react-bootstrap";
 
-const Table = styled.div`
-	display: grid;
-	max-width: 60rem;
-	margin: auto;
-	grid-template-columns: repeat(3, 1fr);
-	grid-template-rows: repeat(3, 30vh) auto;
-	grid-template-areas: " . . . " " . spinner . " " . . . " " prev pages next ";
-	gap: 1rem;
-`;
-
 const StyledRow = styled(Row)`
+	margin-top: 0.5rem;
 	max-width: 60rem;
 `;
 
