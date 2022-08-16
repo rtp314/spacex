@@ -19,24 +19,22 @@ const StyledRow = styled(Row)`
 	max-width: 60rem;
 `;
 
-const PrevCol = styled(Col)`
-	text-align: right;
+const StyledSpinner = styled(Spinner)`
+	margin: 3rem auto 1rem;
 `;
 
-const NextCol = styled(Col)``;
-
 export default function LaunchTable() {
-	const { loading, next, prev, numberOfPages, launches, page, goToPage } = useLaunches();
+	const { loading, numberOfPages, launches, page, goToPage } = useLaunches();
 
 	const spinner = (
-		<Spinner animation='border' role='status' style={{ gridArea: "spinner", margin: "auto" }}>
+		<StyledSpinner animation='border' role='status'>
 			<span className='visually-hidden'>Loading...</span>
-		</Spinner>
+		</StyledSpinner>
 	);
 
 	return (
 		<>
-			<StyledRow lg='3' className='g-3 mx-auto'>
+			<StyledRow xs='1' sm='2' md='3' className='g-3 mx-auto'>
 				{loading
 					? spinner
 					: launches?.map((launch) => (
@@ -45,13 +43,7 @@ export default function LaunchTable() {
 							</Col>
 					  ))}
 			</StyledRow>
-			<StyledRow lg='3' className='g-3 mx-auto my-3 fs-3 align-items-center'>
-				<PrevCol onClick={prev}>Prev Page</PrevCol>
-				<Col>
-					<Pages numberOfPages={numberOfPages} currentPage={page} goToPage={goToPage} />
-				</Col>
-				<NextCol onClick={next}>Next Page</NextCol>
-			</StyledRow>
+			<Pages numberOfPages={numberOfPages} currentPage={page} goToPage={goToPage} />
 		</>
 	);
 }

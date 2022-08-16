@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import Col from "react-bootstrap/Col";
 
 type PagesProps = {
 	numberOfPages: number;
@@ -7,23 +8,57 @@ type PagesProps = {
 	pagesToDisplay?: number;
 };
 
-const PagesWrapper = styled.div`
+const PagesGrid = styled.div`
+	margin: 1rem auto;
+	display: grid;
+	grid-template-columns: 1fr 2rem 1fr;
+	grid-template-rows: auto auto;
+	grid-template-areas: "pages pages pages" "prev . next";
+	align-items: center;
+	gap: 0.5em;
+	font-size: 1.5rem;
+
+	@media screen and (min-width: 576px) {
+		grid-template-columns: 1fr auto 1fr;
+		grid-template-rows: auto;
+		grid-template-areas: "prev pages next";
+	}
+`;
+
+const PagesWrapper = styled(Col)`
 	grid-area: pages;
-	width: 100%;
 	display: grid;
 	grid-template-columns: 1fr 2rem 1fr;
 	align-items: center;
+
+	span {
+		padding: 0.5rem;
+		cursor: pointer;
+		text-decoration: underline;
+		&:hover {
+			color: #999;
+		}
+	}
+
+	.current-page {
+		font-size: 1.3em;
+		text-decoration: none;
+		text-align: center;
+		border-radius: 0.1em;
+	}
+
+	div:first-child {
+		text-align: right;
+	}
 `;
 
-const PageSpan = styled.span`
-	margin: 0.5rem;
-	cursor: pointer;
-	text-decoration: underline;
+const PrevCol = styled(Col)`
+	grid-area: prev;
+	text-align: right;
 `;
 
-const CurrentPage = styled(PageSpan)`
-	font-size: 1.3em;
-	text-decoration: none;
+const NextCol = styled(Col)`
+	grid-area: next;
 `;
 
 export default function Pages({ numberOfPages, currentPage, goToPage, pagesToDisplay = 9 }: PagesProps) {
@@ -43,25 +78,36 @@ export default function Pages({ numberOfPages, currentPage, goToPage, pagesToDis
 
 		return { left, right };
 	}
+
+	function handlePrev() {
+		if (currentPage > 1) goToPage(currentPage - 1);
+	}
+
+	function handleNext() {
+		if (currentPage < numberOfPages) goToPage(currentPage + 1);
+	}
+
 	return (
-		<PagesWrapper>
-			<div style={{ textAlign: "right" }}>
-				{left.map((pageNum) => (
-					<PageSpan onClick={() => goToPage(pageNum)} key={pageNum}>
-						{pageNum}
-					</PageSpan>
-				))}
-			</div>
-			<div>
-				<CurrentPage>{currentPage}</CurrentPage>
-			</div>
-			<div>
-				{right.map((pageNum) => (
-					<PageSpan onClick={() => goToPage(pageNum)} key={pageNum}>
-						{pageNum}
-					</PageSpan>
-				))}
-			</div>
-		</PagesWrapper>
+		<PagesGrid>
+			<PrevCol onClick={handlePrev}>Back</PrevCol>
+			<PagesWrapper>
+				<div>
+					{left.map((pageNum) => (
+						<span onClick={() => goToPage(pageNum)} key={pageNum}>
+							{pageNum}
+						</span>
+					))}
+				</div>
+				<div className='current-page bg-primary text-white'>{currentPage}</div>
+				<div>
+					{right.map((pageNum) => (
+						<span onClick={() => goToPage(pageNum)} key={pageNum}>
+							{pageNum}
+						</span>
+					))}
+				</div>
+			</PagesWrapper>
+			<NextCol onClick={handleNext}>Next</NextCol>
+		</PagesGrid>
 	);
 }
