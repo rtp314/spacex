@@ -50,6 +50,9 @@ function AboutModal({ show, setShow }: AboutModalProps) {
 			<Modal.Body>
 				<p>This is a simple site showcasing the launch history of SpaceX.</p>
 				<p>Click on one of the items to see the details of that launch.</p>
+				<p className='text-black-50'>
+					Created using GraphQL, React, Styled-components, React-Bootstrap, and Typescript
+				</p>
 			</Modal.Body>
 			<Modal.Footer>
 				<Button variant='secondary' onClick={handleClose}>

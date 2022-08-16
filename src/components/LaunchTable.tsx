@@ -4,35 +4,47 @@ import useLaunches from "../hooks/useLaunches";
 import Pages from "./Pages";
 import styled from "styled-components";
 import { Col, Row } from "react-bootstrap";
+import rocketGif from "../assets/giphy-rocket.gif";
 
 const StyledRow = styled(Row)`
 	margin-top: 0.5rem;
 	max-width: 60rem;
 `;
 
-const StyledSpinner = styled(Spinner)`
+const Loader = styled.div`
 	margin: 3rem auto 1rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 `;
 
 export default function LaunchTable() {
 	const { loading, numberOfPages, launches, page, goToPage } = useLaunches();
 
-	const spinner = (
-		<StyledSpinner animation='border' role='status'>
-			<span className='visually-hidden'>Loading...</span>
-		</StyledSpinner>
+	const loaderContents = (
+		<>
+			<img src={rocketGif} alt='loading' />
+			<div className='fs-3'>
+				Loading...
+				<Spinner animation='border' role='status'>
+					<span className='visually-hidden'>Loading...</span>
+				</Spinner>
+			</div>
+		</>
 	);
 
 	return (
 		<>
 			<StyledRow xs='1' sm='2' md='3' className='g-3 mx-auto'>
-				{loading
-					? spinner
-					: launches?.map((launch) => (
-							<Col key={launch.id}>
-								<LaunchCard {...launch} />
-							</Col>
-					  ))}
+				{loading ? (
+					<Loader>{loaderContents}</Loader>
+				) : (
+					launches?.map((launch) => (
+						<Col key={launch.id}>
+							<LaunchCard {...launch} />
+						</Col>
+					))
+				)}
 			</StyledRow>
 			<Pages numberOfPages={numberOfPages} currentPage={page} goToPage={goToPage} />
 		</>
