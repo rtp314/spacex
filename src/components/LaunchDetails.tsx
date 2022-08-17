@@ -42,17 +42,23 @@ const ReadMore = styled.div`
 
 export default function LaunchDetails() {
 	const { loading, launches, selectedLaunchId } = useLaunches();
-	const { loadingDetails, additionalDetails } = useIndividualLaunch(
-		selectedLaunchId || parseFloat(window.location.hash)
-	);
+	const { loadingDetails, additionalDetails } = useIndividualLaunch(selectedLaunchId || trimHash());
 	const [showDetailsFlag, setShowDetailsFlag] = useState(false);
 	const selectedLaunch = getLaunchDetails();
+	// if navigating directly to this page, useLaunches will not have fetched anything, need to fall back to useIndividualLaunch
+	const detailsWithFallback = selectedLaunch || additionalDetails;
+
+	function trimHash() {
+		const hash = window.location.hash;
+		if (hash[0] !== "#") return parseFloat(hash);
+		else return parseFloat(hash.slice(1));
+	}
 
 	function getLaunchDetails() {
 		return launches.find((launch) => launch.id === selectedLaunchId);
 	}
 
-	if (loading || selectedLaunch === undefined) {
+	if ((loading && loadingDetails) || detailsWithFallback === undefined) {
 		return <div>Loading...</div>;
 	}
 
@@ -71,25 +77,25 @@ export default function LaunchDetails() {
 		<DetailsWrapper>
 			<Button onClick={() => (window.location.hash = "")}>Back</Button>
 
-			<h1 className='text-center mt-2'>{selectedLaunch.mission_name}</h1>
+			<h1 className='text-center mt-2'>{detailsWithFallback.mission_name}</h1>
 			<StyledCarousel fade variant='dark'>
-				{selectedLaunch.links.flickr_images.length > 0 ? (
-					selectedLaunch.links.flickr_images.map((img) => (
-						<Carousel.Item>
+				{detailsWithFallback.links.flickr_images.length > 0 ? (
+					detailsWithFallback.links.flickr_images.map((img, i) => (
+						<Carousel.Item key={i}>
 							<CarouselImage src={img} />
 						</Carousel.Item>
 					))
 				) : (
 					<Carousel.Item className='w-100 h-100'>
-						<CarouselImage src={selectedLaunch.links.mission_patch_small} />
+						<CarouselImage src={detailsWithFallback.links.mission_patch_small} />
 					</Carousel.Item>
 				)}
 			</StyledCarousel>
 			<h4 className='text-center'>Launch Details</h4>
 			<p className='text-center'>
-				<em>Launched at: {selectedLaunch.launch_date_local}</em>
+				<em>Launched at: {detailsWithFallback.launch_date_local}</em>
 			</p>
-			<p>{selectedLaunch.details}</p>
+			<p>{detailsWithFallback.details}</p>
 			{showDetailsFlag ? <MoreDetailsSelector /> : readMore}
 			<Button className='mt-3' onClick={() => (window.location.hash = "")}>
 				Back
@@ -117,8 +123,8 @@ function MoreDetails({ rocket, ships }: LaunchDetailsType) {
 				</ListGroup.Item>
 			</ListGroup>
 			<h2 className='mt-4'>Ships</h2>
-			{ships.map((ship) => (
-				<ListGroup className='mt-3'>
+			{ships.map((ship, i) => (
+				<ListGroup className='mt-3' key={i}>
 					<ListGroup.Item>
 						<strong>{ship.name}</strong>&nbsp;
 						{ship.active ? <Badge bg='success'>Active</Badge> : <Badge bg='warning'>Retired</Badge>}

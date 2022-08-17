@@ -8,6 +8,13 @@ type Ship = {
 };
 
 export type LaunchDetailsType = {
+	details: string;
+	mission_name: string;
+	launch_date_local: string;
+	links: {
+		flickr_images: string[];
+		mission_patch_small: string;
+	};
 	rocket: {
 		rocket: {
 			mass: {
@@ -35,6 +42,13 @@ export default function useIndividualLaunch(id: number) {
 		const query = {
 			query: `{
                 launch(id: ${id}) {
+                    details
+                    mission_name
+                    launch_date_local
+                    links {
+                        flickr_images
+                        mission_patch_small
+                    }
                     rocket {
                         rocket {
                             mass {
