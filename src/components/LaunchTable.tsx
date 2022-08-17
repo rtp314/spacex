@@ -1,9 +1,10 @@
 import LaunchCard from "./LaunchCard";
 import Spinner from "react-bootstrap/Spinner";
-import useLaunches from "../hooks/useLaunches";
+import useLaunches from "../context/LaunchesContext";
 import Pages from "./Pages";
 import styled from "styled-components";
-import { Col, Row } from "react-bootstrap";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
 import rocketGif from "../assets/giphy-rocket.gif";
 
 const StyledRow = styled(Row)`
@@ -26,7 +27,7 @@ export default function LaunchTable() {
 
 	const loaderContents = (
 		<>
-			<img src={rocketGif} alt='loading' />
+			{/* <img src={rocketGif} alt='loading' /> */}
 			<div className='fs-3'>
 				Loading...
 				<Spinner animation='border' role='status'>

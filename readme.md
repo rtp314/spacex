@@ -18,3 +18,4 @@ Add hover effects on card
 Add About section
 Add footer
 Rotate photos when hovering over card
+Slide in description when hovering over card

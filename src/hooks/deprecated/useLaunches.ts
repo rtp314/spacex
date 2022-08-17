@@ -1,38 +1,37 @@
 import { useEffect, useState } from "react";
+import { Launch } from "../../context/LaunchesContext";
 
-export type Launch = {
-	id: number;
-	details: string;
-	mission_name: string;
-	launch_date_local: string;
-	links: {
-		flickr_images: string[];
-		mission_patch_small: string;
-	};
-};
-
-let launchesCache: Launch[];
-let numberOfPagesCache: number;
+let launchesCache: Launch[] | undefined;
+let numberOfPagesCache: number | undefined;
 
 export default function useLaunches(itemsPerPage: number = 9) {
 	const [page, setPage] = useState<number>(1);
-	const [launches, setLaunches] = useState<Launch[]>(launchesCache);
+	const [launches, setLaunches] = useState<Launch[]>(launchesCache || []);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [numberOfPages, setNumberOfPages] = useState<number>(numberOfPagesCache || 0);
+	const [selectedLaunchId, setSelectedLaunchId] = useState<number>();
+
+	function invalidateCache() {
+		launchesCache = undefined;
+		numberOfPagesCache = undefined;
+	}
 
 	function next() {
 		setLoading(true);
+		invalidateCache();
 		setPage((page) => page + 1);
 	}
 
 	function prev() {
 		if (page === 1) return;
 		setLoading(true);
+		invalidateCache();
 		setPage((page) => page - 1);
 	}
 
 	function goToPage(pageNum: number) {
 		setLoading(true);
+		invalidateCache();
 		setPage(pageNum);
 	}
 
@@ -70,10 +69,12 @@ export default function useLaunches(itemsPerPage: number = 9) {
 			fetch(url, options)
 				.then((res) => res.json())
 				.then((res) => {
-					launchesCache = res.data.launchesPastResult.data;
-					numberOfPagesCache = Math.ceil(res.data.launchesPastResult.result.totalCount / itemsPerPage);
-					setLaunches(launchesCache);
-					setNumberOfPages(numberOfPagesCache);
+					const newData = res.data.launchesPastResult.data;
+					const newNumberOfPages = Math.ceil(res.data.launchesPastResult.result.totalCount / itemsPerPage);
+					launchesCache = newData;
+					numberOfPagesCache = newNumberOfPages;
+					setLaunches(newData);
+					setNumberOfPages(newNumberOfPages);
 					setLoading(false);
 				})
 				.catch((err) => console.error(err));
@@ -81,5 +82,5 @@ export default function useLaunches(itemsPerPage: number = 9) {
 		}
 	}, [page]);
 
-	return { loading, next, prev, goToPage, launches, page, numberOfPages };
+	return { loading, next, prev, goToPage, launches, page, numberOfPages, selectedLaunchId, setSelectedLaunchId };
 }
