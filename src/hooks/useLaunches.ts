@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 export type Launch = {
 	id: number;
+	details: string;
 	mission_name: string;
 	launch_date_local: string;
 	links: {
@@ -10,11 +11,14 @@ export type Launch = {
 	};
 };
 
+let launchesCache: Launch[];
+let numberOfPagesCache: number;
+
 export default function useLaunches(itemsPerPage: number = 9) {
 	const [page, setPage] = useState<number>(1);
-	const [launches, setLaunches] = useState<Launch[]>();
+	const [launches, setLaunches] = useState<Launch[]>(launchesCache);
 	const [loading, setLoading] = useState<boolean>(true);
-	const [numberOfPages, setNumberOfPages] = useState<number>(0);
+	const [numberOfPages, setNumberOfPages] = useState<number>(numberOfPagesCache || 0);
 
 	function next() {
 		setLoading(true);
@@ -33,13 +37,17 @@ export default function useLaunches(itemsPerPage: number = 9) {
 	}
 
 	useEffect(() => {
-		const controller = new AbortController();
-		const url = "https://api.spacex.land/graphql/";
-		const query = {
-			query: `{
+		if (launchesCache) {
+			setLoading(false);
+		} else {
+			const controller = new AbortController();
+			const url = "https://api.spacex.land/graphql/";
+			const query = {
+				query: `{
                 launchesPastResult(limit: ${itemsPerPage}, offset: ${(page - 1) * itemsPerPage}) {
                     data {
                         id
+                        details
                         mission_name
                         links {
                             flickr_images
@@ -52,23 +60,25 @@ export default function useLaunches(itemsPerPage: number = 9) {
                     }
                 }
             }`,
-		};
-		const options = {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(query),
-			signal: controller.signal,
-		};
-		fetch(url, options)
-			.then((res) => res.json())
-			.then((res) => {
-				setLaunches(res.data.launchesPastResult.data);
-				setNumberOfPages(Math.ceil(res.data.launchesPastResult.result.totalCount / 9));
-				setLoading(false);
-			})
-			.catch((err) => console.error(err));
-
-		return () => controller.abort();
+			};
+			const options = {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(query),
+				signal: controller.signal,
+			};
+			fetch(url, options)
+				.then((res) => res.json())
+				.then((res) => {
+					launchesCache = res.data.launchesPastResult.data;
+					numberOfPagesCache = Math.ceil(res.data.launchesPastResult.result.totalCount / itemsPerPage);
+					setLaunches(launchesCache);
+					setNumberOfPages(numberOfPagesCache);
+					setLoading(false);
+				})
+				.catch((err) => console.error(err));
+			return () => controller.abort();
+		}
 	}, [page]);
 
 	return { loading, next, prev, goToPage, launches, page, numberOfPages };
