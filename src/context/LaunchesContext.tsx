@@ -101,7 +101,7 @@ export function LaunchesContextProvider({ children }: ContextPropTypes) {
 			};
 			const options = {
 				method: "POST",
-				headers: { "Content-Type": "application/json", 'mode': 'no-cors' },
+				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(query),
 				signal: controller.signal,
 			};
