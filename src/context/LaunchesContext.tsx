@@ -101,7 +101,7 @@ export function LaunchesContextProvider({ children }: ContextPropTypes) {
 			};
 			const options = {
 				method: "POST",
-				headers: { "Content-Type": "application/json" },
+				headers: { "Content-Type": "application/json", 'Apollo-Require-Preflight': 'false' },
 				body: JSON.stringify(query),
 				signal: controller.signal,
 			};
