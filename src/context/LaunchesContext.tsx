@@ -74,11 +74,12 @@ export function LaunchesContextProvider({ children }: ContextPropTypes) {
 	}
 
 	useEffect(() => {
+    setLoading(true)
 		if (launchesCache) {
 			setLoading(false);
 		} else {
 			const controller = new AbortController();
-			const url = "https://api.spacex.land/graphql/";
+			const url = import.meta.env.VITE_API_ENDPOINT;
 			const query = {
 				query: `{
                 launchesPastResult(limit: ${itemsPerPage}, offset: ${(page - 1) * itemsPerPage}) {
@@ -100,13 +101,14 @@ export function LaunchesContextProvider({ children }: ContextPropTypes) {
 			};
 			const options = {
 				method: "POST",
-				headers: { "Content-Type": "application/json" },
+				headers: { "Content-Type": "application/json", 'mode': 'no-cors' },
 				body: JSON.stringify(query),
 				signal: controller.signal,
 			};
 			fetch(url, options)
 				.then((res) => res.json())
 				.then((res) => {
+          console.log(res)
 					const newData = res.data.launchesPastResult.data;
 					const newNumberOfPages = Math.ceil(res.data.launchesPastResult.result.totalCount / itemsPerPage);
 					launchesCache = newData;
@@ -115,7 +117,9 @@ export function LaunchesContextProvider({ children }: ContextPropTypes) {
 					setNumberOfPages(newNumberOfPages);
 					setLoading(false);
 				})
-				.catch((err) => console.error(err));
+				.catch((err) => {
+          setLoading(false)
+          console.error(err)});
 			return () => controller.abort();
 		}
 	}, [page]);
