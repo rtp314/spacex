@@ -49,10 +49,10 @@ export default function LaunchCard({ id, details, name, links, date_local }: Lau
 
   return (
     <StyledCard className="shadow-sm" onClick={handleClick}>
-      <StyledCardImg src={links.flickr?.small?.[0] || links.patch.small} />
+      <StyledCardImg src={links.flickr?.small?.[0] || links.patch?.small} />
       <StyledOverlay>
         <Card.Title>
-          {links.patch.small && <MissionPatchImg className="me-2" src={links.patch.small} alt="mission patch" />}
+          {links.patch?.small && <MissionPatchImg className="me-2" src={links.patch?.small} alt="mission patch" />}
           {name}
         </Card.Title>
         <Card.Text>{date_local.slice(0, 10)}</Card.Text>
