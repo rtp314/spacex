@@ -1,93 +1,61 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
+import { ResLaunch } from '../context/ContextTypes';
 
 type Ship = {
-	name: string;
-	weight_kg: number;
-	year_built: number;
-	active: boolean;
+  name: string;
+  mass_kg: number;
+  year_built: number;
+  active: boolean;
 };
 
-export type LaunchDetailsType = {
-	details: string;
-	mission_name: string;
-	launch_date_local: string;
-	links: {
-		flickr_images: string[];
-		mission_patch_small: string;
-	};
-	rocket: {
-		rocket: {
-			mass: {
-				kg: number;
-			};
-			name: string;
-			height: {
-				meters: number;
-			};
-			description: string;
-			wikipedia: string;
-			active: boolean;
-		};
-	};
-	ships: Ship[];
+type Rocket = {
+  mass: {
+    kg: number;
+  };
+  name: string;
+  height: {
+    meters: number;
+  };
+  description: string;
+  wikipedia: string;
+  active: boolean;
 };
 
-export default function useIndividualLaunch(id: number) {
-	const [additionalDetails, setAdditionalDetails] = useState<LaunchDetailsType>();
-	const [loadingDetails, setLoadingDetails] = useState(true);
+export type LaunchDetails = Omit<ResLaunch, 'rocket' | 'ships'> & {
+  rocket: Rocket;
+  ships: Ship[];
+};
 
-	useEffect(() => {
-		const controller = new AbortController();
-		const url = "https://api.spacex.land/graphql/";
-		const query = {
-			query: `{
-                launch(id: ${id}) {
-                    details
-                    mission_name
-                    launch_date_local
-                    links {
-                        flickr_images
-                        mission_patch_small
-                    }
-                    rocket {
-                        rocket {
-                            mass {
-                                kg
-                            }
-                            name
-                            height {
-                                meters
-                            }
-                            description
-                            wikipedia
-                            active
-                        }
-                    }
-                    ships {
-                        name
-                        weight_kg
-                        year_built
-                        active
-                    }
-                }
-            }`,
-		};
-		const options = {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(query),
-			signal: controller.signal,
-		};
-		fetch(url, options)
-			.then((res) => res.json())
-			.then((res) => {
-				setAdditionalDetails(res.data.launch);
-				setLoadingDetails(false);
-			})
-			.catch((err) => console.error(err));
+export default function useIndividualLaunch(id: string) {
+  const [additionalDetails, setAdditionalDetails] = useState<LaunchDetails>();
+  const [loadingDetails, setLoadingDetails] = useState(true);
 
-		return () => controller.abort();
-	}, [id]);
+  useEffect(() => {
+    const controller = new AbortController();
+    const url = import.meta.env.VITE_API_ENDPOINT;
+    const query = {
+      query: { _id: id },
+      options: { populate: ['rocket', 'ships'] },
+    };
+    const options = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(query),
+      signal: controller.signal,
+    };
+    fetch(url, options)
+      .then(res => res.json())
+      .then(res => {
+        const docs = res.docs as LaunchDetails[];
+        if (docs.length) {
+          setAdditionalDetails(docs[0]);
+          setLoadingDetails(false);
+        }
+      })
+      .catch(err => console.error(err));
 
-	return { loadingDetails, additionalDetails };
+    return () => controller.abort();
+  }, [id]);
+
+  return { loadingDetails, additionalDetails };
 }
